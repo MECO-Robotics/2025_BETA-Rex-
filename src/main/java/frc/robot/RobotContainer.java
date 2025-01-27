@@ -16,11 +16,11 @@ import frc.robot.subsystems.drive.Module;
 import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorConstants;
 import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorIOReplay;
 import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorIOSim;
-import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorIOTalonFX;
+import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorIOSparkMax;
 import frc.robot.subsystems.drive.drive_motor.DriveMotorConstants;
 import frc.robot.subsystems.drive.drive_motor.DriveMotorIOReplay;
 import frc.robot.subsystems.drive.drive_motor.DriveMotorIOSim;
-import frc.robot.subsystems.drive.drive_motor.DriveMotorIOTalonFX;
+import frc.robot.subsystems.drive.drive_motor.DriveMotorIOSparkMax;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.drive.odometry_threads.PhoenixOdometryThread;
@@ -60,31 +60,32 @@ public class RobotContainer {
         // the Phoenix Odometry Thread, if using a combination of the two, set up both
         drive =
             new Drive(
-                new GyroIOPigeon2(0, "Drive"),
+                new GyroIOPigeon2(13, "Drive"),
                 new Module(
-                    new DriveMotorIOTalonFX(
+                    new DriveMotorIOSparkMax(
                         "FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
                     DriveMotorConstants.FRONT_LEFT_GAINS,
-                    new AzimuthMotorIOTalonFX(
+                    new AzimuthMotorIOSparkMax(
                         "FrontLeftAz", AzimuthMotorConstants.FRONT_LEFT_CONFIG),
                     AzimuthMotorConstants.FRONT_LEFT_GAINS),
                 new Module(
-                    new DriveMotorIOTalonFX(
+                    new DriveMotorIOSparkMax(
                         "FrontRightDrive", DriveMotorConstants.FRONT_RIGHT_CONFIG),
                     DriveMotorConstants.FRONT_RIGHT_GAINS,
-                    new AzimuthMotorIOTalonFX(
+                    new AzimuthMotorIOSparkMax(
                         "FrontRightAz", AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
                     AzimuthMotorConstants.FRONT_RIGHT_GAINS),
                 new Module(
-                    new DriveMotorIOTalonFX("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
+                    new DriveMotorIOSparkMax("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
                     DriveMotorConstants.BACK_LEFT_GAINS,
-                    new AzimuthMotorIOTalonFX("BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                    new AzimuthMotorIOSparkMax(
+                        "BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
                     AzimuthMotorConstants.BACK_LEFT_GAINS),
                 new Module(
-                    new DriveMotorIOTalonFX(
+                    new DriveMotorIOSparkMax(
                         "BackRightDrive", DriveMotorConstants.BACK_RIGHT_CONFIG),
                     DriveMotorConstants.BACK_RIGHT_GAINS,
-                    new AzimuthMotorIOTalonFX(
+                    new AzimuthMotorIOSparkMax(
                         "BackRightAz", AzimuthMotorConstants.BACK_RIGHT_CONFIG),
                     AzimuthMotorConstants.BACK_RIGHT_GAINS),
                 PhoenixOdometryThread.getInstance(),
