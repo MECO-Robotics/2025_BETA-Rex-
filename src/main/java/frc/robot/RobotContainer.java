@@ -41,224 +41,224 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-        // Subsystems
-        private final Drive drive;
+    // Subsystems
+    private final Drive drive;
 
-        @SuppressWarnings("unused")
-        private final Vision vision;
+    @SuppressWarnings("unused")
+    private final Vision vision;
 
-        // Controller
-        private final CommandXboxController driverController = new CommandXboxController(0);
+    // Controller
+    private final CommandXboxController driverController = new CommandXboxController(0);
 
-        // Dashboard inputs
-        private final LoggedDashboardChooser<Command> autoChooser;
+    // Dashboard inputs
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-        /**
-         * The container for the robot. Contains subsystems, OI devices, and commands.
-         */
-        public RobotContainer() {
-                switch (Constants.currentMode) {
-                        case REAL:
-                                // Real robot, instantiate hardware IO implementations
-                                drive = new Drive(
-                                                new GyroIOPigeon2(13, ""),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax(
-                                                                                "FrontLeftDrive",
-                                                                                DriveMotorConstants.FRONT_LEFT_CONFIG),
-                                                                DriveMotorConstants.FRONT_LEFT_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "FrontLeftAz",
-                                                                                AzimuthMotorConstants.FRONT_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax(
-                                                                                "FrontRightDrive",
-                                                                                DriveMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                DriveMotorConstants.FRONT_RIGHT_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "FrontRightAz",
-                                                                                AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax("BackLeftDrive",
-                                                                                DriveMotorConstants.BACK_LEFT_CONFIG),
-                                                                DriveMotorConstants.BACK_LEFT_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "BackLeftAz",
-                                                                                AzimuthMotorConstants.BACK_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.BACK_LEFT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax(
-                                                                                "BackRightDrive",
-                                                                                DriveMotorConstants.BACK_RIGHT_CONFIG),
-                                                                DriveMotorConstants.BACK_RIGHT_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "BackRightAz",
-                                                                                AzimuthMotorConstants.BACK_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
-                                                PhoenixOdometryThread.getInstance());
-                                vision = new Vision(
-                                                drive::addVisionMeasurement,
-                                                new VisionIOPhotonVision(
-                                                                VisionConstants.camera0Name,
-                                                                VisionConstants.robotToCamera0));
-                                break;
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        switch (Constants.currentMode) {
+            case REAL:
+                // Real robot, instantiate hardware IO implementations
+                drive = new Drive(
+                        new GyroIOPigeon2(13, ""),
+                        new Module(
+                                new DriveMotorIOSparkMax(
+                                        "FrontLeftDrive",
+                                        DriveMotorConstants.FRONT_LEFT_CONFIG),
+                                DriveMotorConstants.FRONT_LEFT_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "FrontLeftAz",
+                                        AzimuthMotorConstants.FRONT_LEFT_CONFIG),
+                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
+                        new Module(
+                                new DriveMotorIOSparkMax(
+                                        "FrontRightDrive",
+                                        DriveMotorConstants.FRONT_RIGHT_CONFIG),
+                                DriveMotorConstants.FRONT_RIGHT_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "FrontRightAz",
+                                        AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
+                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
+                        new Module(
+                                new DriveMotorIOSparkMax("BackLeftDrive",
+                                        DriveMotorConstants.BACK_LEFT_CONFIG),
+                                DriveMotorConstants.BACK_LEFT_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "BackLeftAz",
+                                        AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                                AzimuthMotorConstants.BACK_LEFT_GAINS),
+                        new Module(
+                                new DriveMotorIOSparkMax(
+                                        "BackRightDrive",
+                                        DriveMotorConstants.BACK_RIGHT_CONFIG),
+                                DriveMotorConstants.BACK_RIGHT_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "BackRightAz",
+                                        AzimuthMotorConstants.BACK_RIGHT_CONFIG),
+                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
+                        PhoenixOdometryThread.getInstance());
+                vision = new Vision(
+                        drive::addVisionMeasurement,
+                        new VisionIOPhotonVision(
+                                VisionConstants.camera0Name,
+                                VisionConstants.robotToCamera0));
+                break;
 
-                        case SIM:
-                                drive = new Drive(
-                                                new GyroIO() {
-                                                },
-                                                new Module(
-                                                                new DriveMotorIOSim("FrontLeftDrive",
-                                                                                DriveMotorConstants.FRONT_LEFT_CONFIG),
-                                                                DriveMotorConstants.FRONT_LEFT_GAINS,
-                                                                new AzimuthMotorIOSim("FrontLeftAz",
-                                                                                AzimuthMotorConstants.FRONT_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSim("FrontRightDrive",
-                                                                                DriveMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                DriveMotorConstants.FRONT_RIGHT_GAINS,
-                                                                new AzimuthMotorIOSim("FrontRightAz",
-                                                                                AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSim("BackLeftDrive",
-                                                                                DriveMotorConstants.BACK_LEFT_CONFIG),
-                                                                DriveMotorConstants.BACK_LEFT_GAINS,
-                                                                new AzimuthMotorIOSim("BackLeftAz",
-                                                                                AzimuthMotorConstants.BACK_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.BACK_LEFT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSim("BackRightDrive",
-                                                                                DriveMotorConstants.BACK_RIGHT_CONFIG),
-                                                                DriveMotorConstants.BACK_RIGHT_GAINS,
-                                                                new AzimuthMotorIOSim("BackRightAz",
-                                                                                AzimuthMotorConstants.BACK_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
-                                                null,
-                                                null);
+            case SIM:
+                drive = new Drive(
+                        new GyroIO() {
+                        },
+                        new Module(
+                                new DriveMotorIOSim("FrontLeftDrive",
+                                        DriveMotorConstants.FRONT_LEFT_CONFIG),
+                                DriveMotorConstants.FRONT_LEFT_GAINS,
+                                new AzimuthMotorIOSim("FrontLeftAz",
+                                        AzimuthMotorConstants.FRONT_LEFT_CONFIG),
+                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
+                        new Module(
+                                new DriveMotorIOSim("FrontRightDrive",
+                                        DriveMotorConstants.FRONT_RIGHT_CONFIG),
+                                DriveMotorConstants.FRONT_RIGHT_GAINS,
+                                new AzimuthMotorIOSim("FrontRightAz",
+                                        AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
+                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
+                        new Module(
+                                new DriveMotorIOSim("BackLeftDrive",
+                                        DriveMotorConstants.BACK_LEFT_CONFIG),
+                                DriveMotorConstants.BACK_LEFT_GAINS,
+                                new AzimuthMotorIOSim("BackLeftAz",
+                                        AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                                AzimuthMotorConstants.BACK_LEFT_GAINS),
+                        new Module(
+                                new DriveMotorIOSim("BackRightDrive",
+                                        DriveMotorConstants.BACK_RIGHT_CONFIG),
+                                DriveMotorConstants.BACK_RIGHT_GAINS,
+                                new AzimuthMotorIOSim("BackRightAz",
+                                        AzimuthMotorConstants.BACK_RIGHT_CONFIG),
+                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
+                        null,
+                        null);
 
-                                vision = new Vision(
-                                                drive::addVisionMeasurement,
-                                                new VisionIOPhotonVisionSim(
-                                                                VisionConstants.camera0Name,
-                                                                VisionConstants.robotToCamera0, drive::getPose),
-                                                new VisionIOPhotonVisionSim(
-                                                                VisionConstants.camera1Name,
-                                                                VisionConstants.robotToCamera1, drive::getPose));
-                                break;
+                vision = new Vision(
+                        drive::addVisionMeasurement,
+                        new VisionIOPhotonVisionSim(
+                                VisionConstants.camera0Name,
+                                VisionConstants.robotToCamera0, drive::getPose),
+                        new VisionIOPhotonVisionSim(
+                                VisionConstants.camera1Name,
+                                VisionConstants.robotToCamera1, drive::getPose));
+                break;
 
-                        default:
-                                // Replayed robot, disable IO implementations
-                                drive = new Drive(
-                                                new GyroIO() {
-                                                },
-                                                new Module(
-                                                                new DriveMotorIOReplay("FrontLeftDrive"),
-                                                                DriveMotorConstants.FRONT_LEFT_GAINS,
-                                                                new AzimuthMotorIOReplay("FrontLeftAz"),
-                                                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOReplay("FrontRightDrive"),
-                                                                DriveMotorConstants.FRONT_RIGHT_GAINS,
-                                                                new AzimuthMotorIOReplay("FrontRightAz"),
-                                                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOReplay("BackLeftDrive"),
-                                                                DriveMotorConstants.BACK_LEFT_GAINS,
-                                                                new AzimuthMotorIOReplay("BackLeftAz"),
-                                                                AzimuthMotorConstants.BACK_LEFT_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOReplay("BackRightDrive"),
-                                                                DriveMotorConstants.BACK_RIGHT_GAINS,
-                                                                new AzimuthMotorIOReplay("BackRightAz"),
-                                                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
-                                                null,
-                                                null);
-                                vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
-                                }, new VisionIO() {
-                                });
-                                break;
-                }
-
-                // Set up auto routines
-                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-                // Set up SysId routines
-                autoChooser.addOption(
-                                "Drive Wheel Radius Characterization",
-                                DriveCommands.wheelRadiusCharacterization(drive));
-                autoChooser.addOption(
-                                "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Forward)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Reverse)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-                // Configure the button bindings
-                configureButtonBindings();
+            default:
+                // Replayed robot, disable IO implementations
+                drive = new Drive(
+                        new GyroIO() {
+                        },
+                        new Module(
+                                new DriveMotorIOReplay("FrontLeftDrive"),
+                                DriveMotorConstants.FRONT_LEFT_GAINS,
+                                new AzimuthMotorIOReplay("FrontLeftAz"),
+                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
+                        new Module(
+                                new DriveMotorIOReplay("FrontRightDrive"),
+                                DriveMotorConstants.FRONT_RIGHT_GAINS,
+                                new AzimuthMotorIOReplay("FrontRightAz"),
+                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
+                        new Module(
+                                new DriveMotorIOReplay("BackLeftDrive"),
+                                DriveMotorConstants.BACK_LEFT_GAINS,
+                                new AzimuthMotorIOReplay("BackLeftAz"),
+                                AzimuthMotorConstants.BACK_LEFT_GAINS),
+                        new Module(
+                                new DriveMotorIOReplay("BackRightDrive"),
+                                DriveMotorConstants.BACK_RIGHT_GAINS,
+                                new AzimuthMotorIOReplay("BackRightAz"),
+                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
+                        null,
+                        null);
+                vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
+                }, new VisionIO() {
+                });
+                break;
         }
 
-        /**
-         * Use this method to define your button->command mappings. Buttons can be
-         * created by
-         * instantiating a {@link GenericHID} or one of its subclasses ({@link
-         * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-         * it to a {@link
-         * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-         */
-        private void configureButtonBindings() {
-                // Default command, normal field-relative drive
-                drive.setDefaultCommand(
-                                DriveCommands.joystickDrive(
-                                                drive,
-                                                () -> -driverController.getLeftY(),
-                                                () -> -driverController.getLeftX(),
-                                                () -> -driverController.getRightX()));
+        // Set up auto routines
+        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-                // Lock to 0° when A button is held
-                driverController
-                                .a()
-                                .whileTrue(
-                                                DriveCommands.joystickDriveAtAngle(
-                                                                drive,
-                                                                () -> -driverController.getLeftY(),
-                                                                () -> -driverController.getLeftX(),
-                                                                () -> new Rotation2d()));
+        // Set up SysId routines
+        autoChooser.addOption(
+                "Drive Wheel Radius Characterization",
+                DriveCommands.wheelRadiusCharacterization(drive));
+        autoChooser.addOption(
+                "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+        autoChooser.addOption(
+                "Drive SysId (Quasistatic Forward)",
+                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption(
+                "Drive SysId (Quasistatic Reverse)",
+                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        autoChooser.addOption(
+                "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption(
+                "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-                // Switch to X pattern when X button is pressed
-                driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+        // Configure the button bindings
+        configureButtonBindings();
+    }
 
-                // // Reset gyro / odometry
-                final Runnable resetGyro = () -> drive.setPose(
-                                new Pose2d(
-                                                drive.getPose().getTranslation(),
-                                                DriverStation.getAlliance().isPresent()
-                                                                ? (DriverStation.getAlliance()
-                                                                                .get() == DriverStation.Alliance.Red
-                                                                                                ? new Rotation2d(
-                                                                                                                Math.PI)
-                                                                                                : new Rotation2d())
-                                                                : new Rotation2d())); // zero gyro
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+     * it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        // Default command, normal field-relative drive
+        drive.setDefaultCommand(
+                DriveCommands.joystickDrive(
+                        drive,
+                        () -> -driverController.getLeftY(),
+                        () -> -driverController.getLeftX(),
+                        () -> -driverController.getRightX()));
 
-                // Reset gyro to 0° when B button is pressed
-                driverController.b().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
-        }
+        // Lock to 0° when A button is held
+        driverController
+                .a()
+                .whileTrue(
+                        DriveCommands.joystickDriveAtAngle(
+                                drive,
+                                () -> -driverController.getLeftY(),
+                                () -> -driverController.getLeftX(),
+                                () -> new Rotation2d()));
 
-        /**
-         * Use this to pass the autonomous command to the main {@link Robot} class.
-         *
-         * @return the command to run in autonomous
-         */
-        public Command getAutonomousCommand() {
-                return autoChooser.get();
-        }
+        // Switch to X pattern when X button is pressed
+        driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+        // // Reset gyro / odometry
+        final Runnable resetGyro = () -> drive.setPose(
+                new Pose2d(
+                        drive.getPose().getTranslation(),
+                        DriverStation.getAlliance().isPresent()
+                                ? (DriverStation.getAlliance()
+                                        .get() == DriverStation.Alliance.Red
+                                                ? new Rotation2d(
+                                                        Math.PI)
+                                                : new Rotation2d())
+                                : new Rotation2d())); // zero gyro
+
+        // Reset gyro to 0° when B button is pressed
+        driverController.b().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return autoChooser.get();
+    }
 }
