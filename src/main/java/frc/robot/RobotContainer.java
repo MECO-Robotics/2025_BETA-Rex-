@@ -60,7 +60,7 @@ public class RobotContainer {
         // the Phoenix Odometry Thread, if using a combination of the two, set up both
         drive =
             new Drive(
-                new GyroIOPigeon2(13, "Drive"),
+                new GyroIOPigeon2(13, ""),
                 new Module(
                     new DriveMotorIOSparkMax(
                         "FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
