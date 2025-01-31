@@ -98,8 +98,8 @@ public class AzimuthMotorIOTalonFX implements AzimuthMotorIO {
                     .withNeutralMode(NeutralModeValue.Brake)
                     .withInverted(
                         config.reversed()[0]
-                            ? InvertedValue.Clockwise_Positive
-                            : InvertedValue.CounterClockwise_Positive))
+                            ? InvertedValue.CounterClockwise_Positive
+                            : InvertedValue.Clockwise_Positive))
             .withClosedLoopGeneral(new ClosedLoopGeneralConfigs().withContinuousWrap(true));
 
     switch (hardwareConfig.encoderType()) {
@@ -117,6 +117,32 @@ public class AzimuthMotorIOTalonFX implements AzimuthMotorIO {
         tryUntilOk(5, () -> motors[0].getConfigurator().apply(leaderConfig));
         break;
       case EXTERNAL_CANCODER:
+        externalEncoder =
+            new AbsoluteCancoder(
+                config.encoderID(),
+                config.canBus(),
+                new CANcoderConfiguration()
+                    .withMagnetSensor(
+                        new MagnetSensorConfigs()
+                            .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                            .withMagnetOffset(config.encoderOffset().getMeasure())));
+
+        encoderAlert =
+            new Alert(
+                name,
+                name + " CANCoder Disconnected! CAN ID: " + config.encoderID(),
+                AlertType.kError);
+
+        leaderConfig.withFeedback(
+            new FeedbackConfigs()
+                .withFeedbackRemoteSensorID(config.encoderID())
+                .withSensorToMechanismRatio(1.0)
+                .withRotorToSensorRatio(config.gearRatio())
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder));
+
+        tryUntilOk(5, () -> motors[0].getConfigurator().apply(leaderConfig));
+        break;
+      case EXTERNAL_CANCODER_PRO:
         externalEncoder =
             new AbsoluteCancoder(
                 config.encoderID(),
@@ -230,6 +256,8 @@ public class AzimuthMotorIOTalonFX implements AzimuthMotorIO {
       motorAlerts[i].set(!motorsConnected[i]);
     }
 
+    inputs.desiredPositionRotations = positionSetpoint;
+
     inputs.motorsConnected = motorsConnected;
 
     inputs.motorPositions = motorPositions;
@@ -243,6 +271,9 @@ public class AzimuthMotorIOTalonFX implements AzimuthMotorIO {
         encoderConnected = false;
         break;
       case EXTERNAL_CANCODER:
+        encoderConnected = BaseStatusSignal.refreshAll(rotorPosition).isOK();
+        break;
+      case EXTERNAL_CANCODER_PRO:
         encoderConnected = BaseStatusSignal.refreshAll(rotorPosition).isOK();
         break;
       case EXTERNAL_DIO:

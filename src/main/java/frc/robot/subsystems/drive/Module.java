@@ -3,7 +3,6 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorConstants.AzimuthMotorGains;
 import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorIO;
@@ -11,7 +10,8 @@ import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorIOInputsAutoLogged;
 import frc.robot.subsystems.drive.drive_motor.DriveMotorConstants.DriveMotorGains;
 import frc.robot.subsystems.drive.drive_motor.DriveMotorIO;
 import frc.robot.subsystems.drive.drive_motor.DriveMotorIOInputsAutoLogged;
-import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.OnboardModuleState;
+import frc.robot.util.mechanical_advantage.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -31,6 +31,8 @@ public class Module {
   private final LoggedTunableNumber drivekV;
   private final LoggedTunableNumber drivekA;
 
+  private final LoggedTunableNumber drivekMaxAccel;
+
   private final LoggedTunableNumber azimuthkP;
   private final LoggedTunableNumber azimuthkI;
   private final LoggedTunableNumber azimuthkD;
@@ -40,14 +42,6 @@ public class Module {
 
   private final LoggedTunableNumber azimuthkMaxVelo;
   private final LoggedTunableNumber azimuthkMaxAccel;
-
-  private TrapezoidProfile.Constraints constraints;
-
-  private TrapezoidProfile profile;
-
-  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
-
-  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
 
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
@@ -69,6 +63,9 @@ public class Module {
     drivekV = new LoggedTunableNumber("Drive/" + driveName + "/Gains/kV", driveGains.kV());
     drivekA = new LoggedTunableNumber("Drive/" + driveName + "/Gains/kA", driveGains.kA());
 
+    drivekMaxAccel =
+        new LoggedTunableNumber("Drive/" + driveName + "/Gains/kMaxAccel", driveGains.kMaxAccel());
+
     azimuthkP = new LoggedTunableNumber("Drive/" + azimuthName + "/Gains/kP", azimuthGains.kP());
     azimuthkI = new LoggedTunableNumber("Drive/" + azimuthName + "/Gains/kI", azimuthGains.kI());
     azimuthkD = new LoggedTunableNumber("Drive/" + azimuthName + "/Gains/kD", azimuthGains.kD());
@@ -82,13 +79,6 @@ public class Module {
     azimuthkMaxAccel =
         new LoggedTunableNumber(
             "Drive/" + azimuthName + "/Gains/kMaxAccel", azimuthGains.kMaxAccel());
-
-    constraints =
-        new TrapezoidProfile.Constraints(azimuthGains.kMaxVelo(), azimuthGains.kMaxAccel());
-    profile = new TrapezoidProfile(constraints);
-
-    goal = new TrapezoidProfile.State(0, 0);
-    setpoint = goal;
   }
 
   public void periodic() {
@@ -108,23 +98,20 @@ public class Module {
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
 
-    setpoint = profile.calculate(0.02, setpoint, goal);
-
-    azimuthMotor.setPosition(setpoint.position, setpoint.velocity);
-
     LoggedTunableNumber.ifChanged(
         hashCode(),
         (values) -> {
           driveMotor.setGains(
               new DriveMotorGains(
-                  values[0], values[1], values[2], values[3], values[4], values[5]));
+                  values[0], values[1], values[2], values[3], values[4], values[5], values[6]));
         },
         drivekP,
         drivekI,
         drivekD,
         drivekS,
         drivekV,
-        drivekA);
+        drivekA,
+        drivekMaxAccel);
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -145,17 +132,21 @@ public class Module {
   }
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */
-  public void runSetpoint(SwerveModuleState state) {
+  public void runSetpoint(SwerveModuleState state, double azimuthVelocityFF) {
     // Optimize velocity setpoint
-    state.optimize(getAngle());
+    state = OnboardModuleState.optimize(state, getAngle());
+    Logger.recordOutput(azimuthName + "/goal", state.angle.getRotations());
     state.cosineScale(Rotation2d.fromRotations(azimuthInputs.outputPositionRotations));
 
-    // Apply setpoints
     driveMotor.setVelocity(
         Units.radiansToRotations(
             state.speedMetersPerSecond / DriveConstants.driveWheelRadiusMeters));
 
-    goal = new TrapezoidProfile.State(state.angle.getRotations(), 0);
+    azimuthMotor.setPosition(state.angle.getRotations(), azimuthVelocityFF);
+
+    // if (Math.abs(azimuthSetpoint.position - azimuthGoal.position) > 0.5) {
+    //   azimuthSetpoint = azimuthGoal;
+    // }
   }
 
   /** Runs the module with the specified output while controlling to zero degrees. */
