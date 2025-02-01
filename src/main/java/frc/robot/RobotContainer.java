@@ -56,7 +56,8 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
 
-        // If using REV hardware, set up the Spark Odometry Thread, if using CTRE hardware, set up
+        // If using REV hardware, set up the Spark Odometry Thread, if using CTRE
+        // hardware, set up
         // the Phoenix Odometry Thread, if using a combination of the two, set up both
         drive =
             new Drive(
