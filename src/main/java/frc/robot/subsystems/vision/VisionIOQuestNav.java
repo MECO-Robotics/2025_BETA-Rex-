@@ -200,22 +200,6 @@ public class VisionIOQuestNav implements VisionIO {
     return data;
   }
 
-  // Gets the Quest's measured position.
-  private Pose3d getPose(float[] position, float[] angles) {
-    Pose3d pose = getQuestNavPose(position, angles);
-    return new Pose3d(
-        pose.getTranslation().minus(resetTranslation).rotateBy(resetRotation),
-        pose.getRotation().minus(resetRotation));
-  }
-
-  // Gets the Rotation of the Quest.
-  public Rotation3d getRotation(float[] angles) {
-    return new Rotation3d(
-        Units.degreesToRadians(-angles[2]),
-        Units.degreesToRadians(angles[0]),
-        Units.degreesToRadians(-angles[1]));
-  }
-
   // Gets the battery percent of the Quest.
   private double getBatteryPercent() {
     return questBatteryPercent.get();
