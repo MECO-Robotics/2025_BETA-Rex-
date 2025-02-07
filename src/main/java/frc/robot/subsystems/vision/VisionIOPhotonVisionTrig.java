@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** IO implementation for real PhotonVision hardware. */
 public class VisionIOPhotonVisionTrig implements VisionIO {
