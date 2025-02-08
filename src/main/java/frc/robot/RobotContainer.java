@@ -301,17 +301,17 @@ public class RobotContainer {
                                                                 new FlywheelVoltageCommand(rightCoralRollerMotor,
                                                                                 () -> -1)));
 
-                // // Reset gyro / odometry
-                final Runnable resetGyro = () -> drive.setPose(
-                                new Pose2d(
-                                                drive.getPose().getTranslation(),
-                                                DriverStation.getAlliance().isPresent()
-                                                                ? (DriverStation.getAlliance()
-                                                                                .get() == DriverStation.Alliance.Red
-                                                                                                ? new Rotation2d(
-                                                                                                                Math.PI)
-                                                                                                : new Rotation2d())
-                                                                : new Rotation2d())); // zero gyro
+    // // Reset gyro / odometry
+    final Runnable resetGyro =
+        () ->
+            drive.setPose(
+                new Pose2d(
+                    drive.getPose().getTranslation(),
+                    DriverStation.getAlliance().isPresent()
+                        ? (DriverStation.getAlliance().get() == DriverStation.Alliance.Red
+                            ? new Rotation2d(Math.PI)
+                            : new Rotation2d())
+                        : new Rotation2d())); // zero gyro
 
     // Reset gyro to 0° when B button is pressed
     driverController.b().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
