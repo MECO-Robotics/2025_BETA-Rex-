@@ -28,8 +28,9 @@ import frc.robot.subsystems.drive.odometry_threads.SparkOdometryThread;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionTrig;
+import frc.robot.subsystems.vision.VisionIOQuestNav;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -88,11 +89,17 @@ public class RobotContainer {
                     AzimuthMotorConstants.BACK_RIGHT_GAINS),
                 PhoenixOdometryThread.getInstance(),
                 SparkOdometryThread.getInstance());
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
+
+        VisionIOQuestNav questNav =
+            new VisionIOQuestNav(
+                VisionConstants.robotToCamera0,
+                new VisionIOPhotonVisionTrig(
+                    "Camera_Module_v1", VisionConstants.robotToCamera1, drive::getRotation));
+        driverController.y().onTrue(Commands.runOnce(questNav::resetPose).ignoringDisable(true));
+        // Reset gyro to 0° when B button is pressed
+        driverController.b().onTrue(Commands.runOnce(questNav::resetHeading).ignoringDisable(true));
+
+        vision = new Vision(drive::addVisionMeasurement, questNav);
         break;
 
       case SIM:
