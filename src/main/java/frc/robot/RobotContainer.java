@@ -44,12 +44,9 @@ import frc.robot.subsystems.vision.VisionIOQuestNav;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -58,14 +55,14 @@ public class RobotContainer {
         private PositionJoint rightCoralRotationMotor;
         private Flywheel rightCoralRollerMotor;
 
-        @SuppressWarnings("unused")
-        private final Vision vision;
+  @SuppressWarnings("unused")
+  private final Vision vision;
 
-        // Controller
-        private final CommandXboxController driverController = new CommandXboxController(0);
+  // Controller
+  private final CommandXboxController driverController = new CommandXboxController(0);
 
-        // Dashboard inputs
-        private final LoggedDashboardChooser<Command> autoChooser;
+  // Dashboard inputs
+  private final LoggedDashboardChooser<Command> autoChooser;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -230,59 +227,56 @@ public class RobotContainer {
                                 break;
                 }
 
-                // Set up auto routines
-                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // Set up auto routines
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-                // Set up SysId routines
-                autoChooser.addOption(
-                                "Drive Wheel Radius Characterization",
-                                DriveCommands.wheelRadiusCharacterization(drive));
-                autoChooser.addOption(
-                                "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Forward)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Quasistatic Reverse)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-                autoChooser.addOption(
-                                "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // Set up SysId routines
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-                // Configure the button bindings
-                configureButtonBindings();
-        }
+    // Configure the button bindings
+    configureButtonBindings();
+  }
 
-        /**
-         * Use this method to define your button->command mappings. Buttons can be
-         * created by
-         * instantiating a {@link GenericHID} or one of its subclasses ({@link
-         * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-         * it to a {@link
-         * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-         */
-        private void configureButtonBindings() {
-                // Default command, normal field-relative drive
-                drive.setDefaultCommand(
-                                DriveCommands.joystickDrive(
-                                                drive,
-                                                () -> -driverController.getLeftY(),
-                                                () -> -driverController.getLeftX(),
-                                                () -> -driverController.getRightX()));
+  /**
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   */
+  private void configureButtonBindings() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
-                // Lock to 0° when A button is held
-                driverController
-                                .a()
-                                .whileTrue(
-                                                DriveCommands.joystickDriveAtAngle(
-                                                                drive,
-                                                                () -> -driverController.getLeftY(),
-                                                                () -> -driverController.getLeftX(),
-                                                                () -> new Rotation2d()));
+    // Lock to 0° when A button is held
+    driverController
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> new Rotation2d()));
 
-                // Switch to X pattern when X button is pressed
-                driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // Switch to X pattern when X button is pressed
+    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
                 // driverController.b().onTrue(Commands.runOnce(drive::resetGyro,
                 // drive).ignoringDisable(true));
@@ -319,16 +313,16 @@ public class RobotContainer {
                                                                                                 : new Rotation2d())
                                                                 : new Rotation2d())); // zero gyro
 
-                // Reset gyro to 0° when B button is pressed
-                driverController.b().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
-        }
+    // Reset gyro to 0° when B button is pressed
+    driverController.b().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
+  }
 
-        /**
-         * Use this to pass the autonomous command to the main {@link Robot} class.
-         *
-         * @return the command to run in autonomous
-         */
-        public Command getAutonomousCommand() {
-                return autoChooser.get();
-        }
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return autoChooser.get();
+  }
 }
