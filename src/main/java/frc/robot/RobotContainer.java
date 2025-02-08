@@ -24,6 +24,7 @@ import frc.robot.subsystems.drive.drive_motor.DriveMotorIOSparkMax;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.drive.odometry_threads.PhoenixOdometryThread;
+import frc.robot.subsystems.drive.odometry_threads.SparkOdometryThread;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
