@@ -28,8 +28,9 @@ import frc.robot.subsystems.drive.odometry_threads.SparkOdometryThread;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionTrig;
+import frc.robot.subsystems.vision.VisionIOQuestNav;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
