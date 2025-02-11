@@ -94,7 +94,7 @@ public class RobotContainer {
             new VisionIOQuestNav(
                 VisionConstants.robotToCamera0,
                 new VisionIOPhotonVisionTrig(
-                    "Camera_Module_v1", VisionConstants.robotToCamera1, drive::getRotation));
+                    "USB_Camera", VisionConstants.robotToCamera1, drive::getRotation));
         driverController.y().onTrue(Commands.runOnce(questNav::resetPose).ignoringDisable(true));
         // Reset gyro to 0° when B button is pressed
         driverController.b().onTrue(Commands.runOnce(questNav::resetHeading).ignoringDisable(true));
