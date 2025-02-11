@@ -66,45 +66,43 @@ public class RobotContainer {
                         new GyroIOPigeon2(13, ""),
                         new Module(
                                 new DriveMotorIOSparkMax(
-                                        "FrontLeftDrive",
-                                        DriveMotorConstants.FRONT_LEFT_CONFIG),
+                                        "FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
                                 DriveMotorConstants.FRONT_LEFT_GAINS,
                                 new AzimuthMotorIOSparkMax(
-                                        "FrontLeftAz",
-                                        AzimuthMotorConstants.FRONT_LEFT_CONFIG),
+                                        "FrontLeftAz", AzimuthMotorConstants.FRONT_LEFT_CONFIG),
                                 AzimuthMotorConstants.FRONT_LEFT_GAINS),
                         new Module(
                                 new DriveMotorIOSparkMax(
-                                        "FrontRightDrive",
-                                        DriveMotorConstants.FRONT_RIGHT_CONFIG),
+                                        "FrontRightDrive", DriveMotorConstants.FRONT_RIGHT_CONFIG),
                                 DriveMotorConstants.FRONT_RIGHT_GAINS,
                                 new AzimuthMotorIOSparkMax(
-                                        "FrontRightAz",
-                                        AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
+                                        "FrontRightAz", AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
                                 AzimuthMotorConstants.FRONT_RIGHT_GAINS),
                         new Module(
-                                new DriveMotorIOSparkMax("BackLeftDrive",
-                                        DriveMotorConstants.BACK_LEFT_CONFIG),
+                                new DriveMotorIOSparkMax("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
                                 DriveMotorConstants.BACK_LEFT_GAINS,
                                 new AzimuthMotorIOSparkMax(
-                                        "BackLeftAz",
-                                        AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                                        "BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
                                 AzimuthMotorConstants.BACK_LEFT_GAINS),
                         new Module(
                                 new DriveMotorIOSparkMax(
-                                        "BackRightDrive",
-                                        DriveMotorConstants.BACK_RIGHT_CONFIG),
+                                        "BackRightDrive", DriveMotorConstants.BACK_RIGHT_CONFIG),
                                 DriveMotorConstants.BACK_RIGHT_GAINS,
                                 new AzimuthMotorIOSparkMax(
-                                        "BackRightAz",
-                                        AzimuthMotorConstants.BACK_RIGHT_CONFIG),
+                                        "BackRightAz", AzimuthMotorConstants.BACK_RIGHT_CONFIG),
                                 AzimuthMotorConstants.BACK_RIGHT_GAINS),
-                        PhoenixOdometryThread.getInstance());
-                vision = new Vision(
-                        drive::addVisionMeasurement,
-                        new VisionIOPhotonVision(
-                                VisionConstants.camera0Name,
-                                VisionConstants.robotToCamera0));
+                        PhoenixOdometryThread.getInstance(),
+                        SparkOdometryThread.getInstance());
+
+                VisionIOQuestNav questNav = new VisionIOQuestNav(
+                        VisionConstants.robotToCamera0,
+                        new VisionIOPhotonVisionTrig(
+                                "USB_Camera", VisionConstants.robotToCamera1, drive::getRotation));
+                driverController.y().onTrue(Commands.runOnce(questNav::resetPose).ignoringDisable(true));
+                // Reset gyro to 0° when B button is pressed
+                driverController.b().onTrue(Commands.runOnce(questNav::resetHeading).ignoringDisable(true));
+
+                vision = new Vision(drive::addVisionMeasurement, questNav);
                 break;
 
             case SIM:
