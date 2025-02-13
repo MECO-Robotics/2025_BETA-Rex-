@@ -13,25 +13,20 @@ public class DriveMotorConstants {
 
   public static final DriveMotorHardwareConfig FRONT_LEFT_CONFIG =
       new DriveMotorHardwareConfig(
-          new int[] {2}, new boolean[] {false}, DriveConstants.driveMotorGearRatio, canBusName);
+          new int[] {2}, new boolean[] {true}, DriveConstants.driveMotorGearRatio, canBusName);
 
   public static final DriveMotorHardwareConfig FRONT_RIGHT_CONFIG =
       new DriveMotorHardwareConfig(
-          new int[] {4}, new boolean[] {false}, DriveConstants.driveMotorGearRatio, canBusName);
+          new int[] {4}, new boolean[] {true}, DriveConstants.driveMotorGearRatio, canBusName);
 
   public static final DriveMotorHardwareConfig BACK_LEFT_CONFIG =
       new DriveMotorHardwareConfig(
-          new int[] {8}, new boolean[] {false}, DriveConstants.driveMotorGearRatio, canBusName);
+          new int[] {8}, new boolean[] {true}, DriveConstants.driveMotorGearRatio, canBusName);
 
   public static final DriveMotorHardwareConfig BACK_RIGHT_CONFIG =
       new DriveMotorHardwareConfig(
-          new int[] {6}, new boolean[] {false}, DriveConstants.driveMotorGearRatio, canBusName);
+          new int[] {6}, new boolean[] {true}, DriveConstants.driveMotorGearRatio, canBusName);
 
-  public static final DriveMotorGains FRONT_LEFT_GAINS = new DriveMotorGains(0, 0, 0, 0, 0, 0, 0);
-
-  public static final DriveMotorGains FRONT_RIGHT_GAINS = new DriveMotorGains(0, 0, 0, 0, 0, 0, 0);
-
-  public static final DriveMotorGains BACK_LEFT_GAINS = new DriveMotorGains(0, 0, 0, 0, 0, 0, 0);
-
-  public static final DriveMotorGains BACK_RIGHT_GAINS = new DriveMotorGains(0, 0, 0, 0, 0, 0, 0);
+  public static final DriveMotorGains DRIVE_GAINS =
+      new DriveMotorGains(0.05, 0, 0, 0.15, 0.06, 0, 0);
 }
