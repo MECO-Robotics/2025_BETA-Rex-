@@ -94,6 +94,45 @@ public class RobotContainer {
                         PhoenixOdometryThread.getInstance(),
                         SparkOdometryThread.getInstance());
 
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        switch (Constants.currentMode) {
+            case REAL:
+                // Real robot, instantiate hardware IO implementations
+                drive = new Drive(
+                        new GyroIOPigeon2(13, ""),
+                        new Module(
+                                new DriveMotorIOSparkMax(
+                                        "FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "FrontLeftAz", AzimuthMotorConstants.FRONT_LEFT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
+                        new Module(
+                                new DriveMotorIOSparkMax(
+                                        "FrontRightDrive", DriveMotorConstants.FRONT_RIGHT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "FrontRightAz", AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
+                        new Module(
+                                new DriveMotorIOSparkMax("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
+                        new Module(
+                                new DriveMotorIOSparkMax(
+                                        "BackRightDrive", DriveMotorConstants.BACK_RIGHT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSparkMax(
+                                        "BackRightAz", AzimuthMotorConstants.BACK_RIGHT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
+                        PhoenixOdometryThread.getInstance(),
+                        SparkOdometryThread.getInstance());
+
                 VisionIOQuestNav questNav = new VisionIOQuestNav(
                         VisionConstants.robotToCamera0,
                         new VisionIOPhotonVisionTrig(
@@ -110,33 +149,25 @@ public class RobotContainer {
                         new GyroIO() {
                         },
                         new Module(
-                                new DriveMotorIOSim("FrontLeftDrive",
-                                        DriveMotorConstants.FRONT_LEFT_CONFIG),
-                                DriveMotorConstants.FRONT_LEFT_GAINS,
-                                new AzimuthMotorIOSim("FrontLeftAz",
-                                        AzimuthMotorConstants.FRONT_LEFT_CONFIG),
-                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
+                                new DriveMotorIOSim("FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSim("FrontLeftAz", AzimuthMotorConstants.FRONT_LEFT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         new Module(
-                                new DriveMotorIOSim("FrontRightDrive",
-                                        DriveMotorConstants.FRONT_RIGHT_CONFIG),
-                                DriveMotorConstants.FRONT_RIGHT_GAINS,
-                                new AzimuthMotorIOSim("FrontRightAz",
-                                        AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
-                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
+                                new DriveMotorIOSim("FrontRightDrive", DriveMotorConstants.FRONT_RIGHT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSim("FrontRightAz", AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         new Module(
-                                new DriveMotorIOSim("BackLeftDrive",
-                                        DriveMotorConstants.BACK_LEFT_CONFIG),
-                                DriveMotorConstants.BACK_LEFT_GAINS,
-                                new AzimuthMotorIOSim("BackLeftAz",
-                                        AzimuthMotorConstants.BACK_LEFT_CONFIG),
-                                AzimuthMotorConstants.BACK_LEFT_GAINS),
+                                new DriveMotorIOSim("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSim("BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         new Module(
-                                new DriveMotorIOSim("BackRightDrive",
-                                        DriveMotorConstants.BACK_RIGHT_CONFIG),
-                                DriveMotorConstants.BACK_RIGHT_GAINS,
-                                new AzimuthMotorIOSim("BackRightAz",
-                                        AzimuthMotorConstants.BACK_RIGHT_CONFIG),
-                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
+                                new DriveMotorIOSim("BackRightDrive", DriveMotorConstants.BACK_RIGHT_CONFIG),
+                                DriveMotorConstants.DRIVE_GAINS,
+                                new AzimuthMotorIOSim("BackRightAz", AzimuthMotorConstants.BACK_RIGHT_CONFIG),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         null,
                         null);
 
@@ -157,24 +188,24 @@ public class RobotContainer {
                         },
                         new Module(
                                 new DriveMotorIOReplay("FrontLeftDrive"),
-                                DriveMotorConstants.FRONT_LEFT_GAINS,
+                                DriveMotorConstants.DRIVE_GAINS,
                                 new AzimuthMotorIOReplay("FrontLeftAz"),
-                                AzimuthMotorConstants.FRONT_LEFT_GAINS),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         new Module(
                                 new DriveMotorIOReplay("FrontRightDrive"),
-                                DriveMotorConstants.FRONT_RIGHT_GAINS,
+                                DriveMotorConstants.DRIVE_GAINS,
                                 new AzimuthMotorIOReplay("FrontRightAz"),
-                                AzimuthMotorConstants.FRONT_RIGHT_GAINS),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         new Module(
                                 new DriveMotorIOReplay("BackLeftDrive"),
-                                DriveMotorConstants.BACK_LEFT_GAINS,
+                                DriveMotorConstants.DRIVE_GAINS,
                                 new AzimuthMotorIOReplay("BackLeftAz"),
-                                AzimuthMotorConstants.BACK_LEFT_GAINS),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         new Module(
                                 new DriveMotorIOReplay("BackRightDrive"),
-                                DriveMotorConstants.BACK_RIGHT_GAINS,
+                                DriveMotorConstants.DRIVE_GAINS,
                                 new AzimuthMotorIOReplay("BackRightAz"),
-                                AzimuthMotorConstants.BACK_RIGHT_GAINS),
+                                AzimuthMotorConstants.Azimuth_GAINS),
                         null,
                         null);
                 vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
