@@ -54,49 +54,43 @@ public class FlywheelIOSparkMax implements FlywheelIO {
     motorCurrents = new double[config.canIds().length];
     motorAlerts = new Alert[config.canIds().length];
 
-    motors[0] =
-        new SparkMax(config.canIds()[0], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
+    motors[0] = new SparkMax(config.canIds()[0], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
     if (isBrushless) {
-      leaderConfig =
-          new SparkMaxConfig()
-              .apply(
-                  new EncoderConfig()
-                      .positionConversionFactor(1.0 / config.gearRatio())
-                      .velocityConversionFactor(1.0 / (60.0 * config.gearRatio())))
-              .inverted(config.reversed()[0]);
+      leaderConfig = new SparkMaxConfig()
+          .apply(
+              new EncoderConfig()
+                  .positionConversionFactor(1.0 / config.gearRatio())
+                  .velocityConversionFactor(1.0 / (60.0 * config.gearRatio())))
+          .inverted(config.reversed()[0]);
 
     } else {
-      leaderConfig =
-          new SparkMaxConfig()
-              .apply(
-                  new EncoderConfig()
-                      .positionConversionFactor(1.0 / config.gearRatio())
-                      .velocityConversionFactor(1.0 / (60.0 * config.gearRatio()))
-                      .inverted(config.reversed()[0]));
+      leaderConfig = new SparkMaxConfig()
+          .apply(
+              new EncoderConfig()
+                  .positionConversionFactor(1.0 / config.gearRatio())
+                  .velocityConversionFactor(1.0 / (60.0 * config.gearRatio()))
+                  .inverted(config.reversed()[0]));
     }
 
     motors[0].configure(
         leaderConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    motorAlerts[0] =
-        new Alert(
-            name,
-            name + " Leader Motor Disconnected! CAN ID: " + config.canIds()[0],
-            AlertType.kError);
+    motorAlerts[0] = new Alert(
+        name,
+        name + " Leader Motor Disconnected! CAN ID: " + config.canIds()[0],
+        AlertType.kError);
 
     for (int i = 1; i < config.canIds().length; i++) {
-      motors[i] =
-          new SparkMax(config.canIds()[i], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
+      motors[i] = new SparkMax(config.canIds()[i], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
       motors[i].configure(
           new SparkMaxConfig().follow(motors[0], config.reversed()[i]),
           ResetMode.kNoResetSafeParameters,
           PersistMode.kNoPersistParameters);
 
-      motorAlerts[i] =
-          new Alert(
-              name,
-              name + " Follower Motor " + i + " Disconnected! CAN ID: " + config.canIds()[i],
-              AlertType.kError);
+      motorAlerts[i] = new Alert(
+          name,
+          name + " Follower Motor " + i + " Disconnected! CAN ID: " + config.canIds()[i],
+          AlertType.kError);
     }
 
     feedforward = new TunableSimpleMotorFeedforward(0, 0, 0);
