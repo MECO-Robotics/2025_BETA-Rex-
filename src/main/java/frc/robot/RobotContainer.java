@@ -28,6 +28,8 @@ import frc.robot.subsystems.drive.odometry_threads.PhoenixOdometryThread;
 import frc.robot.subsystems.drive.odometry_threads.SparkOdometryThread;
 import frc.robot.subsystems.position_joint.PositionJoint;
 import frc.robot.subsystems.position_joint.PositionJointConstants;
+import frc.robot.subsystems.position_joint.PositionJointIOReplay;
+import frc.robot.subsystems.position_joint.PositionJointIOSim;
 import frc.robot.subsystems.position_joint.PositionJointIOSparkMax;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -141,6 +143,13 @@ public class RobotContainer {
                 null,
                 null);
 
+        rightCoralRotationMotor =
+            new PositionJoint(
+                new PositionJointIOSim(
+                    "RightCoralRotateMotor",
+                    PositionJointConstants.RIGHT_CORAL_INTAKE_RROTATION_CONFIG),
+                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
+
         vision =
             new Vision(
                 drive::addVisionMeasurement,
@@ -177,6 +186,12 @@ public class RobotContainer {
                     AzimuthMotorConstants.Azimuth_GAINS),
                 null,
                 null);
+
+        rightCoralRotationMotor =
+            new PositionJoint(
+                new PositionJointIOReplay("RightCoralRotateMotor"),
+                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
+
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         break;
     }
