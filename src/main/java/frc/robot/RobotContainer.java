@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.position_joint.PositionJointPositionCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Module;
 import frc.robot.subsystems.drive.azimuth_motor.AzimuthMotorConstants;
@@ -25,6 +26,9 @@ import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.drive.odometry_threads.PhoenixOdometryThread;
 import frc.robot.subsystems.drive.odometry_threads.SparkOdometryThread;
+import frc.robot.subsystems.position_joint.PositionJoint;
+import frc.robot.subsystems.position_joint.PositionJointConstants;
+import frc.robot.subsystems.position_joint.PositionJointIOSparkMax;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -45,6 +49,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
     // Subsystems
     private final Drive drive;
+    private PositionJoint rightCoralRotationMotor;
 
     @SuppressWarnings("unused")
     private final Vision vision;
@@ -140,6 +145,12 @@ public class RobotContainer {
                 driverController.y().onTrue(Commands.runOnce(questNav::resetPose).ignoringDisable(true));
                 // Reset gyro to 0° when B button is pressed
                 driverController.b().onTrue(Commands.runOnce(questNav::resetHeading).ignoringDisable(true));
+
+                rightCoralRotationMotor = new PositionJoint(
+                        new PositionJointIOSparkMax(
+                                "RightCoralRotateMotor",
+                                PositionJointConstants.RIGHT_CORAL_INTAKE_RROTATION_CONFIG),
+                        PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
 
                 vision = new Vision(drive::addVisionMeasurement, questNav);
                 break;
@@ -267,6 +278,21 @@ public class RobotContainer {
 
         // Switch to X pattern when X button is pressed
         driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+        // driverController.b().onTrue(Commands.runOnce(drive::resetGyro,
+        // drive).ignoringDisable(true));
+        // Coral Intake
+        driverController
+                .rightBumper()
+                .whileTrue(
+                        new PositionJointPositionCommand(
+                                rightCoralRotationMotor,
+                                () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.DOWN));
+        driverController
+                .rightBumper()
+                .whileFalse(
+                        new PositionJointPositionCommand(
+                                rightCoralRotationMotor, () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.UP));
 
         // // Reset gyro / odometry
         final Runnable resetGyro = () -> drive.setPose(
