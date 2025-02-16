@@ -33,7 +33,8 @@ public class PositionJointConstants {
       double kTolerance,
       double kDefaultSetpoint) {}
 
-  // Position Joint Gear Ratio should be multiplied by Math.PI * 2 for rotation joints to convert
+  // Position Joint Gear Ratio should be multiplied by Math.PI * 2 for rotation
+  // joints to convert
   // from rotations to radians
   public record PositionJointHardwareConfig(
       int[] canIds,
@@ -60,4 +61,24 @@ public class PositionJointConstants {
           11,
           Rotation2d.fromRotations(0.5),
           "");
+
+  public static final PositionJointGains CORAL_INTAKE_ROTATION_GAINS =
+      new PositionJointGains(20, 0.0, 0.0, 0.5, 1.0, 2.0, 0.0, 0.5, 0.5, 0.0, Math.PI, 0.2, 0.0);
+
+  public static final PositionJointHardwareConfig RIGHT_CORAL_INTAKE_RROTATION_CONFIG =
+      new PositionJointHardwareConfig(
+          new int[] {14},
+          new boolean[] {false},
+          15 * 30 / 15 * 2 * Math.PI,
+          40,
+          GravityType.SINE,
+          EncoderType.INTERNAL,
+          -1,
+          Rotation2d.fromRotations(0),
+          "");
+
+  public static final class CORAL_ROTATION_POSITIONS {
+    public static final double UP = 0;
+    public static final double DOWN = 0.041;
+  }
 }
