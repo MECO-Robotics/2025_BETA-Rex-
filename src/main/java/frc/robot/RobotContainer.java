@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.flywheel.FlywheelVoltageCommand;
 import frc.robot.commands.position_joint.PositionJointPositionCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Module;
@@ -26,6 +27,9 @@ import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.drive.odometry_threads.PhoenixOdometryThread;
 import frc.robot.subsystems.drive.odometry_threads.SparkOdometryThread;
+import frc.robot.subsystems.flywheel.Flywheel;
+import frc.robot.subsystems.flywheel.FlywheelConstants;
+import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
 import frc.robot.subsystems.position_joint.PositionJoint;
 import frc.robot.subsystems.position_joint.PositionJointConstants;
 import frc.robot.subsystems.position_joint.PositionJointIOReplay;
@@ -52,6 +56,7 @@ public class RobotContainer {
     // Subsystems
     private final Drive drive;
     private PositionJoint rightCoralRotationMotor;
+    private Flywheel rightCoralRollerMotor;
 
     @SuppressWarnings("unused")
     private final Vision vision;
@@ -153,6 +158,13 @@ public class RobotContainer {
                                 "RightCoralRotateMotor",
                                 PositionJointConstants.RIGHT_CORAL_INTAKE_RROTATION_CONFIG),
                         PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
+
+                rightCoralRollerMotor = new Flywheel(
+                        new FlywheelIOSparkMax(
+                                "RightCoralRollerMotor",
+                                FlywheelConstants.RIGHT_CORAL_INTAKE_ROLLERS_CONFG,
+                                true),
+                        FlywheelConstants.RIGHT_CORAL_INTAKE_ROLLER_GAINS);
 
                 vision = new Vision(drive::addVisionMeasurement, questNav);
                 break;
@@ -296,14 +308,20 @@ public class RobotContainer {
         driverController
                 .rightBumper()
                 .whileTrue(
-                        new PositionJointPositionCommand(
-                                rightCoralRotationMotor,
-                                () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.DOWN));
+                        Commands.parallel(
+                                new PositionJointPositionCommand(
+                                        rightCoralRotationMotor,
+                                        () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.DOWN),
+                                new FlywheelVoltageCommand(rightCoralRollerMotor, () -> 5)));
+
         driverController
                 .rightBumper()
                 .whileFalse(
-                        new PositionJointPositionCommand(
-                                rightCoralRotationMotor, () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.UP));
+                        Commands.parallel(
+                                new PositionJointPositionCommand(
+                                        rightCoralRotationMotor,
+                                        () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.UP),
+                                new FlywheelVoltageCommand(rightCoralRollerMotor, () -> -1)));
 
         // // Reset gyro / odometry
         final Runnable resetGyro = () -> drive.setPose(
