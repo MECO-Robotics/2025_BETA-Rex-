@@ -50,10 +50,10 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-        // Subsystems
-        private final Drive drive;
-        private PositionJoint rightCoralRotationMotor;
-        private Flywheel rightCoralRollerMotor;
+  // Subsystems
+  private final Drive drive;
+  private PositionJoint rightCoralRotationMotor;
+  private Flywheel rightCoralRollerMotor;
 
   @SuppressWarnings("unused")
   private final Vision vision;
@@ -64,168 +64,150 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-        /**
-         * The container for the robot. Contains subsystems, OI devices, and commands.
-         */
-        public RobotContainer() {
-                switch (Constants.currentMode) {
-                        case REAL:
-                                // Real robot, instantiate hardware IO implementations
-                                drive = new Drive(
-                                                new GyroIOPigeon2(13, ""),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax(
-                                                                                "FrontLeftDrive",
-                                                                                DriveMotorConstants.FRONT_LEFT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "FrontLeftAz",
-                                                                                AzimuthMotorConstants.FRONT_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax(
-                                                                                "FrontRightDrive",
-                                                                                DriveMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "FrontRightAz",
-                                                                                AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax("BackLeftDrive",
-                                                                                DriveMotorConstants.BACK_LEFT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "BackLeftAz",
-                                                                                AzimuthMotorConstants.BACK_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSparkMax(
-                                                                                "BackRightDrive",
-                                                                                DriveMotorConstants.BACK_RIGHT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSparkMax(
-                                                                                "BackRightAz",
-                                                                                AzimuthMotorConstants.BACK_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                PhoenixOdometryThread.getInstance(),
-                                                SparkOdometryThread.getInstance());
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  public RobotContainer() {
+    switch (Constants.currentMode) {
+      case REAL:
+        // Real robot, instantiate hardware IO implementations
+        drive =
+            new Drive(
+                new GyroIOPigeon2(13, ""),
+                new Module(
+                    new DriveMotorIOSparkMax(
+                        "FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSparkMax(
+                        "FrontLeftAz", AzimuthMotorConstants.FRONT_LEFT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOSparkMax(
+                        "FrontRightDrive", DriveMotorConstants.FRONT_RIGHT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSparkMax(
+                        "FrontRightAz", AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOSparkMax("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSparkMax(
+                        "BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOSparkMax(
+                        "BackRightDrive", DriveMotorConstants.BACK_RIGHT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSparkMax(
+                        "BackRightAz", AzimuthMotorConstants.BACK_RIGHT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                PhoenixOdometryThread.getInstance(),
+                SparkOdometryThread.getInstance());
 
-                                VisionIOQuestNav questNav = new VisionIOQuestNav(
-                                                VisionConstants.robotToCamera0,
-                                                new VisionIOPhotonVisionTrig(
-                                                                "USB_Camera", VisionConstants.robotToCamera1,
-                                                                drive::getRotation));
-                                driverController.y()
-                                                .onTrue(Commands.runOnce(questNav::resetPose).ignoringDisable(true));
-                                // Reset gyro to 0° when B button is pressed
-                                driverController.b()
-                                                .onTrue(Commands.runOnce(questNav::resetHeading).ignoringDisable(true));
+        VisionIOQuestNav questNav =
+            new VisionIOQuestNav(
+                VisionConstants.robotToCamera0,
+                new VisionIOPhotonVisionTrig(
+                    "USB_Camera", VisionConstants.robotToCamera1, drive::getRotation));
+        driverController.y().onTrue(Commands.runOnce(questNav::resetPose).ignoringDisable(true));
+        // Reset gyro to 0° when B button is pressed
+        driverController.b().onTrue(Commands.runOnce(questNav::resetHeading).ignoringDisable(true));
 
-                                rightCoralRotationMotor = new PositionJoint(
-                                                new PositionJointIOSparkMax(
-                                                                "RightCoralRotateMotor",
-                                                                PositionJointConstants.RIGHT_CORAL_INTAKE_RROTATION_CONFIG),
-                                                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
+        rightCoralRotationMotor =
+            new PositionJoint(
+                new PositionJointIOSparkMax(
+                    "RightCoralRotateMotor",
+                    PositionJointConstants.RIGHT_CORAL_INTAKE_RROTATION_CONFIG),
+                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
 
-                                rightCoralRollerMotor = new Flywheel(
-                                                new FlywheelIOSparkMax(
-                                                                "RightCoralRollerMotor",
-                                                                FlywheelConstants.RIGHT_CORAL_INTAKE_ROLLERS_CONFG,
-                                                                true),
-                                                FlywheelConstants.RIGHT_CORAL_INTAKE_ROLLER_GAINS);
+        rightCoralRollerMotor =
+            new Flywheel(
+                new FlywheelIOSparkMax(
+                    "RightCoralRollerMotor",
+                    FlywheelConstants.RIGHT_CORAL_INTAKE_ROLLERS_CONFG,
+                    true),
+                FlywheelConstants.RIGHT_CORAL_INTAKE_ROLLER_GAINS);
 
-                                vision = new Vision(drive::addVisionMeasurement, questNav);
-                                break;
+        vision = new Vision(drive::addVisionMeasurement, questNav);
+        break;
 
-                        case SIM:
-                                drive = new Drive(
-                                                new GyroIO() {
-                                                },
-                                                new Module(
-                                                                new DriveMotorIOSim("FrontLeftDrive",
-                                                                                DriveMotorConstants.FRONT_LEFT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSim("FrontLeftAz",
-                                                                                AzimuthMotorConstants.FRONT_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSim("FrontRightDrive",
-                                                                                DriveMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSim("FrontRightAz",
-                                                                                AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSim("BackLeftDrive",
-                                                                                DriveMotorConstants.BACK_LEFT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSim("BackLeftAz",
-                                                                                AzimuthMotorConstants.BACK_LEFT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOSim("BackRightDrive",
-                                                                                DriveMotorConstants.BACK_RIGHT_CONFIG),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOSim("BackRightAz",
-                                                                                AzimuthMotorConstants.BACK_RIGHT_CONFIG),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                null,
-                                                null);
+      case SIM:
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new Module(
+                    new DriveMotorIOSim("FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSim("FrontLeftAz", AzimuthMotorConstants.FRONT_LEFT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOSim("FrontRightDrive", DriveMotorConstants.FRONT_RIGHT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSim("FrontRightAz", AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOSim("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSim("BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOSim("BackRightDrive", DriveMotorConstants.BACK_RIGHT_CONFIG),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOSim("BackRightAz", AzimuthMotorConstants.BACK_RIGHT_CONFIG),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                null,
+                null);
 
-                                rightCoralRotationMotor = new PositionJoint(
-                                                new PositionJointIOSim(
-                                                                "RightCoralRotateMotor",
-                                                                PositionJointConstants.RIGHT_CORAL_INTAKE_RROTATION_CONFIG),
-                                                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
+        rightCoralRotationMotor =
+            new PositionJoint(
+                new PositionJointIOSim(
+                    "RightCoralRotateMotor",
+                    PositionJointConstants.RIGHT_CORAL_INTAKE_RROTATION_CONFIG),
+                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
 
-                                vision = new Vision(
-                                                drive::addVisionMeasurement,
-                                                new VisionIOPhotonVisionSim(
-                                                                VisionConstants.camera0Name,
-                                                                VisionConstants.robotToCamera0, drive::getPose),
-                                                new VisionIOPhotonVisionSim(
-                                                                VisionConstants.camera1Name,
-                                                                VisionConstants.robotToCamera1, drive::getPose));
-                                break;
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
+        break;
 
-                        default:
-                                // Replayed robot, disable IO implementations
-                                drive = new Drive(
-                                                new GyroIO() {
-                                                },
-                                                new Module(
-                                                                new DriveMotorIOReplay("FrontLeftDrive"),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOReplay("FrontLeftAz"),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOReplay("FrontRightDrive"),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOReplay("FrontRightAz"),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOReplay("BackLeftDrive"),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOReplay("BackLeftAz"),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                new Module(
-                                                                new DriveMotorIOReplay("BackRightDrive"),
-                                                                DriveMotorConstants.DRIVE_GAINS,
-                                                                new AzimuthMotorIOReplay("BackRightAz"),
-                                                                AzimuthMotorConstants.Azimuth_GAINS),
-                                                null,
-                                                null);
+      default:
+        // Replayed robot, disable IO implementations
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new Module(
+                    new DriveMotorIOReplay("FrontLeftDrive"),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOReplay("FrontLeftAz"),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOReplay("FrontRightDrive"),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOReplay("FrontRightAz"),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOReplay("BackLeftDrive"),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOReplay("BackLeftAz"),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                new Module(
+                    new DriveMotorIOReplay("BackRightDrive"),
+                    DriveMotorConstants.DRIVE_GAINS,
+                    new AzimuthMotorIOReplay("BackRightAz"),
+                    AzimuthMotorConstants.Azimuth_GAINS),
+                null,
+                null);
 
-                                rightCoralRotationMotor = new PositionJoint(
-                                                new PositionJointIOReplay("RightCoralRotateMotor"),
-                                                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
+        rightCoralRotationMotor =
+            new PositionJoint(
+                new PositionJointIOReplay("RightCoralRotateMotor"),
+                PositionJointConstants.CORAL_INTAKE_ROTATION_GAINS);
 
-                                vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
-                                }, new VisionIO() {
-                                });
-                                break;
-                }
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        break;
+    }
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -278,28 +260,26 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-                // driverController.b().onTrue(Commands.runOnce(drive::resetGyro,
-                // drive).ignoringDisable(true));
-                // Coral Intake
-                driverController
-                                .rightBumper()
-                                .whileTrue(
-                                                Commands.parallel(
-                                                                new PositionJointPositionCommand(
-                                                                                rightCoralRotationMotor,
-                                                                                () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.DOWN),
-                                                                new FlywheelVoltageCommand(rightCoralRollerMotor,
-                                                                                () -> 5)));
+    // driverController.b().onTrue(Commands.runOnce(drive::resetGyro,
+    // drive).ignoringDisable(true));
+    // Coral Intake
+    driverController
+        .rightBumper()
+        .whileTrue(
+            Commands.parallel(
+                new PositionJointPositionCommand(
+                    rightCoralRotationMotor,
+                    () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.DOWN),
+                new FlywheelVoltageCommand(rightCoralRollerMotor, () -> 5)));
 
-                driverController
-                                .rightBumper()
-                                .whileFalse(
-                                                Commands.parallel(
-                                                                new PositionJointPositionCommand(
-                                                                                rightCoralRotationMotor,
-                                                                                () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.UP),
-                                                                new FlywheelVoltageCommand(rightCoralRollerMotor,
-                                                                                () -> -1)));
+    driverController
+        .rightBumper()
+        .whileFalse(
+            Commands.parallel(
+                new PositionJointPositionCommand(
+                    rightCoralRotationMotor,
+                    () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.UP),
+                new FlywheelVoltageCommand(rightCoralRollerMotor, () -> -1)));
 
     // // Reset gyro / odometry
     final Runnable resetGyro =

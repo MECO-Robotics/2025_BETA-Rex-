@@ -80,51 +80,56 @@ public class PositionJointIOSparkMax implements PositionJointIO {
     motorCurrents = new double[config.canIds().length];
     motorAlerts = new Alert[config.canIds().length];
 
-    motors[0] = new SparkMax(config.canIds()[0], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
+    motors[0] =
+        new SparkMax(config.canIds()[0], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
 
     if (isBrushless) {
-      leaderConfig = new SparkMaxConfig()
-          .apply(
-              new EncoderConfig()
-                  .positionConversionFactor(1.0 / config.gearRatio())
-                  .velocityConversionFactor(1.0 / (60.0 * config.gearRatio())))
-          .inverted(config.reversed()[0])
-          .idleMode(IdleMode.kBrake);
+      leaderConfig =
+          new SparkMaxConfig()
+              .apply(
+                  new EncoderConfig()
+                      .positionConversionFactor(1.0 / config.gearRatio())
+                      .velocityConversionFactor(1.0 / (60.0 * config.gearRatio())))
+              .inverted(config.reversed()[0])
+              .idleMode(IdleMode.kBrake);
 
     } else {
-      leaderConfig = new SparkMaxConfig()
-          .apply(
-              new EncoderConfig()
-                  .positionConversionFactor(1.0 / config.gearRatio())
-                  .velocityConversionFactor(1.0 / (60.0 * config.gearRatio()))
-                  .inverted(config.reversed()[0]))
-          .idleMode(IdleMode.kBrake);
+      leaderConfig =
+          new SparkMaxConfig()
+              .apply(
+                  new EncoderConfig()
+                      .positionConversionFactor(1.0 / config.gearRatio())
+                      .velocityConversionFactor(1.0 / (60.0 * config.gearRatio()))
+                      .inverted(config.reversed()[0]))
+              .idleMode(IdleMode.kBrake);
     }
 
     switch (config.encoderType()) {
       case INTERNAL:
-        externalEncoder = new IAbsoluteEncoder() {
-        };
+        externalEncoder = new IAbsoluteEncoder() {};
 
-        encoderAlert = new Alert(name, name + " does not use an external encoder 💀", AlertType.kInfo);
+        encoderAlert =
+            new Alert(name, name + " does not use an external encoder 💀", AlertType.kInfo);
 
         motors[0].configure(
             leaderConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         break;
       case EXTERNAL_CANCODER:
-        externalEncoder = new AbsoluteCancoder(
-            config.encoderID(),
-            config.canBus(),
-            new CANcoderConfiguration()
-                .withMagnetSensor(
-                    new MagnetSensorConfigs()
-                        .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
-                        .withMagnetOffset(config.encoderOffset().getMeasure())));
+        externalEncoder =
+            new AbsoluteCancoder(
+                config.encoderID(),
+                config.canBus(),
+                new CANcoderConfiguration()
+                    .withMagnetSensor(
+                        new MagnetSensorConfigs()
+                            .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                            .withMagnetOffset(config.encoderOffset().getMeasure())));
 
-        encoderAlert = new Alert(
-            name,
-            name + " CANCoder Disconnected! CAN ID: " + config.encoderID(),
-            AlertType.kError);
+        encoderAlert =
+            new Alert(
+                name,
+                name + " CANCoder Disconnected! CAN ID: " + config.encoderID(),
+                AlertType.kError);
 
         motors[0].configure(
             leaderConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -135,10 +140,11 @@ public class PositionJointIOSparkMax implements PositionJointIO {
       case EXTERNAL_DIO:
         externalEncoder = new AbsoluteMagEncoder(config.encoderID());
 
-        encoderAlert = new Alert(
-            name,
-            name + " DIO Encoder Disconnected! DIO ID: " + config.encoderID(),
-            AlertType.kWarning);
+        encoderAlert =
+            new Alert(
+                name,
+                name + " DIO Encoder Disconnected! DIO ID: " + config.encoderID(),
+                AlertType.kWarning);
 
         motors[0].configure(
             leaderConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -148,10 +154,10 @@ public class PositionJointIOSparkMax implements PositionJointIO {
                 externalEncoder.getAbsoluteAngle().plus(config.encoderOffset()).getRotations());
         break;
       case EXTERNAL_SPARK:
-        externalEncoder = new IAbsoluteEncoder() {
-        };
+        externalEncoder = new IAbsoluteEncoder() {};
 
-        encoderAlert = new Alert(name, name + " Internal SPARK Encoder Disconnected", AlertType.kWarning);
+        encoderAlert =
+            new Alert(name, name + " Internal SPARK Encoder Disconnected", AlertType.kWarning);
 
         leaderConfig.apply(
             new AbsoluteEncoderConfig()
@@ -170,28 +176,31 @@ public class PositionJointIOSparkMax implements PositionJointIO {
         break;
 
       default:
-        externalEncoder = new IAbsoluteEncoder() {
-        };
-        encoderAlert = new Alert(name, name + " does not use an external encoder 💀", AlertType.kInfo);
+        externalEncoder = new IAbsoluteEncoder() {};
+        encoderAlert =
+            new Alert(name, name + " does not use an external encoder 💀", AlertType.kInfo);
         break;
     }
 
-    motorAlerts[0] = new Alert(
-        name,
-        name + " Leader Motor Disconnected! CAN ID: " + config.canIds()[0],
-        AlertType.kError);
+    motorAlerts[0] =
+        new Alert(
+            name,
+            name + " Leader Motor Disconnected! CAN ID: " + config.canIds()[0],
+            AlertType.kError);
 
     for (int i = 1; i < config.canIds().length; i++) {
-      motors[i] = new SparkMax(config.canIds()[i], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
+      motors[i] =
+          new SparkMax(config.canIds()[i], isBrushless ? MotorType.kBrushless : MotorType.kBrushed);
       motors[i].configure(
           new SparkMaxConfig().follow(motors[0], config.reversed()[i]).idleMode(IdleMode.kBrake),
           ResetMode.kNoResetSafeParameters,
           PersistMode.kNoPersistParameters);
 
-      motorAlerts[i] = new Alert(
-          name,
-          name + " Follower Motor " + i + " Disconnected! CAN ID: " + config.canIds()[i],
-          AlertType.kError);
+      motorAlerts[i] =
+          new Alert(
+              name,
+              name + " Follower Motor " + i + " Disconnected! CAN ID: " + config.canIds()[i],
+              AlertType.kError);
     }
 
     if (config.gravity() == GravityType.CONSTANT) {
