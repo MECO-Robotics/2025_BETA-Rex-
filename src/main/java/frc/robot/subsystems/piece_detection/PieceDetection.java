@@ -45,6 +45,10 @@ public class PieceDetection extends SubsystemBase {
     return inputs.area;
   }
 
+  public Pose3d getGamePiecePose() {
+    return gamePiecePose;
+  }
+
   public boolean pieceDetected() {
     return inputs.seesTarget;
   }
