@@ -27,7 +27,8 @@ public class VisionIOQuestNav implements VisionIO {
       double batteryPercent,
       double timestamp,
       float[] translation,
-      float[] rotation) {}
+      float[] rotation) {
+  }
 
   private enum QuestNavResetState {
     RESET_POSE_QUEUED,
@@ -41,20 +42,18 @@ public class VisionIOQuestNav implements VisionIO {
   private NetworkTableInstance nt4Instance = NetworkTableInstance.getDefault();
   private NetworkTable nt4Table = nt4Instance.getTable("questnav");
   private IntegerSubscriber questMiso = nt4Table.getIntegerTopic("miso").subscribe(0);
-  private IntegerPublisher questMosi =
-      nt4Table
-          .getIntegerTopic("mosi")
-          .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
+  private IntegerPublisher questMosi = nt4Table
+      .getIntegerTopic("mosi")
+      .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
   private DoubleArrayPublisher resetPublisher = nt4Table.getDoubleArrayTopic("resetpose").publish();
 
   // Subscribe to the Network Tables questnav data topics
   private DoubleSubscriber questTimestamp = nt4Table.getDoubleTopic("timestamp").subscribe(0.0f);
-  private FloatArraySubscriber questPosition =
-      nt4Table.getFloatArrayTopic("position").subscribe(new float[] {0.0f, 0.0f, 0.0f});
-  private FloatArraySubscriber questAngles =
-      nt4Table.getFloatArrayTopic("eulerAngles").subscribe(new float[] {0.0f, 0.0f, 0.0f});
-  private DoubleSubscriber questBatteryPercent =
-      nt4Table.getDoubleTopic("batteryPercent").subscribe(0.0f);
+  private FloatArraySubscriber questPosition = nt4Table.getFloatArrayTopic("position")
+      .subscribe(new float[] { 0.0f, 0.0f, 0.0f });
+  private FloatArraySubscriber questAngles = nt4Table.getFloatArrayTopic("eulerAngles")
+      .subscribe(new float[] { 0.0f, 0.0f, 0.0f });
+  private DoubleSubscriber questBatteryPercent = nt4Table.getDoubleTopic("batteryPercent").subscribe(0.0f);
 
   private QuestNavResetState resetQueue = QuestNavResetState.RESET_COMPLETE;
 
@@ -92,12 +91,10 @@ public class VisionIOQuestNav implements VisionIO {
     inputs.poseObservations = new PoseObservation[questNavData.length];
 
     if (absoluteInputs.poseObservations.length > 0 && questNavData.length > 0) {
-      questNavRawToFieldCoordinateSystemQueue[idx] =
-          absoluteInputs
-              .poseObservations[0]
-              .pose()
-              .getTranslation()
-              .minus(questNavData[0].pose.getTranslation());
+      questNavRawToFieldCoordinateSystemQueue[idx] = absoluteInputs.poseObservations[0]
+          .pose()
+          .getTranslation()
+          .minus(questNavData[0].pose.getTranslation());
       count += 1;
       idx += 1;
       if (idx == questNavRawToFieldCoordinateSystemQueue.length) {
@@ -105,12 +102,11 @@ public class VisionIOQuestNav implements VisionIO {
       }
       questNavRawToFieldCoordinateSystem = new Translation3d();
       for (int i = 0; i < Math.min(count, questNavRawToFieldCoordinateSystemQueue.length); i++) {
-        questNavRawToFieldCoordinateSystem =
-            questNavRawToFieldCoordinateSystem.plus(questNavRawToFieldCoordinateSystemQueue[i]);
+        questNavRawToFieldCoordinateSystem = questNavRawToFieldCoordinateSystem
+            .plus(questNavRawToFieldCoordinateSystemQueue[i]);
       }
-      questNavRawToFieldCoordinateSystem =
-          questNavRawToFieldCoordinateSystem.div(
-              Math.min(count, questNavRawToFieldCoordinateSystemQueue.length));
+      questNavRawToFieldCoordinateSystem = questNavRawToFieldCoordinateSystem.div(
+          Math.min(count, questNavRawToFieldCoordinateSystemQueue.length));
       Logger.recordOutput("QuestNav/RawToField", questNavRawToFieldCoordinateSystem);
     }
 
@@ -121,35 +117,32 @@ public class VisionIOQuestNav implements VisionIO {
           Transform2d resetTransform;
           if (resetQueue == QuestNavResetState.RESET_POSE_QUEUED
               && absoluteInputs.poseObservations.length > 0) {
-            resetTransform =
-                new Transform2d(
-                    absoluteInputs.poseObservations[0].pose().getX(),
-                    absoluteInputs.poseObservations[0].pose().getY(),
-                    new Rotation2d(absoluteInputs.poseObservations[0].pose().getRotation().getZ()));
+            resetTransform = new Transform2d(
+                absoluteInputs.poseObservations[0].pose().getX(),
+                absoluteInputs.poseObservations[0].pose().getY(),
+                new Rotation2d(absoluteInputs.poseObservations[0].pose().getRotation().getZ()));
           } else if (resetQueue == QuestNavResetState.RESET_HEADING_QUEUED
               && questNavData.length > 0) {
-            resetTransform =
-                new Transform2d(
-                    questNavData[0].pose().getTranslation().toTranslation2d(), Rotation2d.kPi);
+            resetTransform = new Transform2d(
+                questNavData[0].pose().getTranslation().toTranslation2d(), Rotation2d.kPi);
           } else {
             break;
           }
 
-          resetTransform =
-              resetTransform.plus(
-                  new Transform2d(
-                      robotToCamera.getX(),
-                      robotToCamera.getY(),
-                      new Rotation2d(robotToCamera.getRotation().getZ())));
+          resetTransform = resetTransform.plus(
+              new Transform2d(
+                  robotToCamera.getX(),
+                  robotToCamera.getY(),
+                  new Rotation2d(robotToCamera.getRotation().getZ())));
 
           if (resetTransform.getX() < 0 || resetTransform.getY() < 0) {
             resetTransform = new Transform2d(1.0, 1.0, resetTransform.getRotation());
           }
           resetPublisher.set(
               new double[] {
-                resetTransform.getX(),
-                resetTransform.getY(),
-                resetTransform.getRotation().getDegrees()
+                  resetTransform.getX(),
+                  resetTransform.getY(),
+                  resetTransform.getRotation().getDegrees()
               });
           resetQueue = QuestNavResetState.RESETTING;
         }
@@ -166,16 +159,15 @@ public class VisionIOQuestNav implements VisionIO {
         break;
     }
     for (int i = 0; i < questNavData.length; i++) {
-      inputs.poseObservations[i] =
-          new PoseObservation(
-              questNavData[i].timestamp(),
-              new Pose3d(
-                  questNavData[i].pose().getTranslation().plus(questNavRawToFieldCoordinateSystem),
-                  questNavData[i].pose().getRotation()),
-              0.0,
-              -1,
-              0.0,
-              PoseObservationType.QUESTNAV);
+      inputs.poseObservations[i] = new PoseObservation(
+          questNavData[i].timestamp(),
+          new Pose3d(
+              questNavData[i].pose().getTranslation().plus(questNavRawToFieldCoordinateSystem),
+              questNavData[i].pose().getRotation()),
+          0.0,
+          -1,
+          0.0,
+          PoseObservationType.QUESTNAV);
     }
     inputs.tagIds = new int[0];
 
@@ -197,13 +189,12 @@ public class VisionIOQuestNav implements VisionIO {
     QuestNavData[] data = new QuestNavData[length];
 
     for (int i = 0; i < length; i++) {
-      data[i] =
-          new QuestNavData(
-              getQuestNavPose(positions[i].value, angles[i].value).plus(robotToCamera.inverse()),
-              battery,
-              timestamps[i].timestamp,
-              positions[i].value,
-              angles[i].value);
+      data[i] = new QuestNavData(
+          getQuestNavPose(positions[i].value, angles[i].value).plus(robotToCamera.inverse()),
+          battery,
+          timestamps[i].timestamp,
+          positions[i].value,
+          angles[i].value);
     }
 
     return data;
