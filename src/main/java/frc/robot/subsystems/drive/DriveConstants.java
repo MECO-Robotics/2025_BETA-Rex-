@@ -42,8 +42,8 @@ public class DriveConstants {
         new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
       };
 
-  public static final double kSteerInertia = 0.004;
-  public static final double kDriveInertia = 0.025;
+  // public static final double kSteerInertia = 0.004;
+  // public static final double kDriveInertia = 0.025;
 
   public static final LinearVelocity maxSpeedAt12Volts =
       FeetPerSecond.of(14); // MK4i 16.5 ft/s L3 Kraken FOC With
@@ -55,7 +55,7 @@ public class DriveConstants {
       1 / ((14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0)); // Mk4i L3
   // with 14t
   // pinion
-  public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
+  public static final DCMotor driveGearbox = DCMotor.getNEO(1);
 
   // Drive encoder configuration
   public static final double driveEncoderPositionFactor =
@@ -68,7 +68,7 @@ public class DriveConstants {
   // Turn motor configuration
   public static final double steerMotorGearRatio = 150.0 / 7.0; // MK4i
   public static final int turnMotorCurrentLimit = 20;
-  public static final DCMotor turnGearbox = DCMotor.getKrakenX60Foc(1);
+  public static final DCMotor turnGearbox = DCMotor.getNEO(1);
 
   // Turn encoder configuration
   public static final double turnEncoderPositionFactor =
@@ -77,8 +77,8 @@ public class DriveConstants {
       (2 * Math.PI) / 60.0 / steerMotorGearRatio; // RPM -> Rad/Sec
 
   // PathPlanner configuration
-  public static final double robotMassKg = 74.088;
-  public static final double robotMOI = 6.883;
+  public static final double robotMassKg = 27;
+  public static final double robotMOI = 3;
   public static final double wheelCOF = 1.2;
   public static final RobotConfig ppConfig =
       new RobotConfig(
@@ -105,10 +105,10 @@ public class DriveConstants {
                           driveGearbox,
                           turnGearbox,
                           driveMotorGearRatio,
-                          18.0,
+                          steerMotorGearRatio,
                           Volts.of(0.1),
                           Volts.of(0.1),
                           Meters.of(driveWheelRadiusMeters),
                           KilogramSquareMeters.of(0.02),
-                          wheelCOF)));
+                          Units.inchesToMeters(wheelCOF))));
 }

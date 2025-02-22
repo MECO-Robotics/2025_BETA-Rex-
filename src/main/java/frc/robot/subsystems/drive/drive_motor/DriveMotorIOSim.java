@@ -57,7 +57,7 @@ public class DriveMotorIOSim implements DriveMotorIO {
     motorVoltages = new double[config.canIds().length];
     motorCurrents = new double[config.canIds().length];
 
-    gearBox = DCMotor.getKrakenX60Foc(config.canIds().length);
+    gearBox = DCMotor.getNEO(config.canIds().length);
 
     sim =
         new DCMotorSim(
@@ -104,7 +104,8 @@ public class DriveMotorIOSim implements DriveMotorIO {
     inputs.motorVoltages = motorVoltages;
     inputs.motorCurrents = motorCurrents;
 
-    // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't matter)
+    // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't
+    // matter)
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
     inputs.odometryDrivePositionsRad =
         new double[] {Units.rotationsToRadians(inputs.positionRotations)};

@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -137,24 +139,24 @@ public class RobotContainer {
                 new GyroIO() {},
                 new Module(
                     new DriveMotorIOSim("FrontLeftDrive", DriveMotorConstants.FRONT_LEFT_CONFIG),
-                    DriveMotorConstants.DRIVE_GAINS,
+                    DriveMotorConstants.DRIVE_GAINS_SIM,
                     new AzimuthMotorIOSim("FrontLeftAz", AzimuthMotorConstants.FRONT_LEFT_CONFIG),
-                    AzimuthMotorConstants.Azimuth_GAINS),
+                    AzimuthMotorConstants.Azimuth_GAINS_SIM),
                 new Module(
                     new DriveMotorIOSim("FrontRightDrive", DriveMotorConstants.FRONT_RIGHT_CONFIG),
-                    DriveMotorConstants.DRIVE_GAINS,
+                    DriveMotorConstants.DRIVE_GAINS_SIM,
                     new AzimuthMotorIOSim("FrontRightAz", AzimuthMotorConstants.FRONT_RIGHT_CONFIG),
-                    AzimuthMotorConstants.Azimuth_GAINS),
+                    AzimuthMotorConstants.Azimuth_GAINS_SIM),
                 new Module(
                     new DriveMotorIOSim("BackLeftDrive", DriveMotorConstants.BACK_LEFT_CONFIG),
-                    DriveMotorConstants.DRIVE_GAINS,
+                    DriveMotorConstants.DRIVE_GAINS_SIM,
                     new AzimuthMotorIOSim("BackLeftAz", AzimuthMotorConstants.BACK_LEFT_CONFIG),
-                    AzimuthMotorConstants.Azimuth_GAINS),
+                    AzimuthMotorConstants.Azimuth_GAINS_SIM),
                 new Module(
                     new DriveMotorIOSim("BackRightDrive", DriveMotorConstants.BACK_RIGHT_CONFIG),
-                    DriveMotorConstants.DRIVE_GAINS,
+                    DriveMotorConstants.DRIVE_GAINS_SIM,
                     new AzimuthMotorIOSim("BackRightAz", AzimuthMotorConstants.BACK_RIGHT_CONFIG),
-                    AzimuthMotorConstants.Azimuth_GAINS),
+                    AzimuthMotorConstants.Azimuth_GAINS_SIM),
                 null,
                 null);
 
@@ -251,12 +253,15 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    /**************************************************************
+     * Drivetrain Controls *
+     **************************************************************/
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driverController.getLeftY(),
-            () -> -driverController.getLeftX(),
+            () -> driverController.getLeftY(),
+            () -> driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
@@ -265,16 +270,62 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
+                () -> driverController.getLeftY(),
+                () -> driverController.getLeftX(),
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // driverController.b().onTrue(Commands.runOnce(drive::resetGyro,
-    // drive).ignoringDisable(true));
-    // Coral Intake
+    // // Reset gyro / odometry
+    final Runnable resetGyro =
+        () ->
+            drive.setPose(
+                new Pose2d(
+                    drive.getPose().getTranslation(),
+                    DriverStation.getAlliance().isPresent()
+                        ? (DriverStation.getAlliance().get() == DriverStation.Alliance.Red
+                            ? new Rotation2d(Math.PI)
+                            : new Rotation2d())
+                        : new Rotation2d())); // zero gyro
+
+    // Reset gyro to 0° when B button is pressed
+    driverController.b().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
+
+    /********************** Autodriving Controls ******************/
+    try {
+      // Load the path you want to follow using its name in the GUI
+      PathPlannerPath path = PathPlannerPath.fromPathFile("FirstPath");
+
+      // Create a path following command using AutoBuilder. This will also trigger
+      // event markers.
+      driverController
+          .a()
+          .onTrue(
+              DriveCommands.joystickDriveAlongTrajectory(
+                  drive,
+                  path,
+                  () -> driverController.getLeftY(),
+                  () -> driverController.getLeftX(),
+                  () -> -driverController.getRightX()));
+
+      driverController
+          .y()
+          .onTrue(
+              DriveCommands.pointToPointDriveCommand(
+                  drive,
+                  new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
+                  new GoalEndState(0, Rotation2d.fromDegrees(0))));
+
+    } catch (Exception e) {
+      DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+      // Raise exception
+      throw new RuntimeException(e);
+    }
+
+    /****************************************************************
+     * Right Coral Intake Controls*
+     ****************************************************************/
     driverController
         .rightBumper()
         .whileTrue(
@@ -292,21 +343,6 @@ public class RobotContainer {
                     rightCoralRotationMotor,
                     () -> PositionJointConstants.CORAL_ROTATION_POSITIONS.UP),
                 new FlywheelVoltageCommand(rightCoralRollerMotor, () -> -1)));
-
-    // // Reset gyro / odometry
-    final Runnable resetGyro =
-        () ->
-            drive.setPose(
-                new Pose2d(
-                    drive.getPose().getTranslation(),
-                    DriverStation.getAlliance().isPresent()
-                        ? (DriverStation.getAlliance().get() == DriverStation.Alliance.Red
-                            ? new Rotation2d(Math.PI)
-                            : new Rotation2d())
-                        : new Rotation2d())); // zero gyro
-
-    // Reset gyro to 0° when B button is pressed
-    driverController.b().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
   }
 
   /**
