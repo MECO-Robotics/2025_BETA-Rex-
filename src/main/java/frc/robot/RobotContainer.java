@@ -1,8 +1,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,6 +45,7 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionTrig;
 import frc.robot.subsystems.vision.VisionIOQuestNav;
+import frc.robot.util.pathplanner.LocalADStarAK;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -70,6 +71,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    Pathfinding.setPathfinder(new LocalADStarAK());
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -296,6 +299,7 @@ public class RobotContainer {
     try {
       // Load the path you want to follow using its name in the GUI
       PathPlannerPath path = PathPlannerPath.fromPathFile("FirstPath");
+      PathPlannerPath javiPath = PathPlannerPath.fromPathFile("JaviPath");
 
       // Create a path following command using AutoBuilder. This will also trigger
       // event markers.
@@ -312,10 +316,10 @@ public class RobotContainer {
       driverController
           .y()
           .onTrue(
-              DriveCommands.pointToPointDriveCommand(
-                  drive,
-                  new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-                  new GoalEndState(0, Rotation2d.fromDegrees(0))));
+              DriveCommands.pathfindToPose(
+                  drive, new Pose2d(12.395, 5.137, Rotation2d.fromDegrees(-60))));
+
+      driverController.x().onTrue(DriveCommands.pathfindToPath(drive, javiPath));
 
     } catch (Exception e) {
       DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());

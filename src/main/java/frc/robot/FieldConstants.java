@@ -22,7 +22,8 @@ public class FieldConstants {
   public static final double fieldLength = Units.inchesToMeters(690.876);
   public static final double fieldWidth = Units.inchesToMeters(317);
   public static final double startingLineX =
-      Units.inchesToMeters(299.438); // Measured from the inside of starting line
+      Units.inchesToMeters(299.438); // Measured from the inside of starting
+  // line
 
   public static class Processor {
     public static final Pose2d centerFace =
@@ -59,12 +60,17 @@ public class FieldConstants {
     public static final Translation2d center =
         new Translation2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501));
     public static final double faceToZoneLine =
-        Units.inchesToMeters(12); // Side of the reef to the inside of the reef zone line
+        Units.inchesToMeters(12); // Side of the reef to the inside of the
+    // reef zone line
 
     public static final Pose2d[] centerFaces =
-        new Pose2d[6]; // Starting facing the driver station in clockwise order
+        new Pose2d[6]; // Starting facing the driver station in clockwise
+    // order
     public static final List<Map<ReefHeight, Pose3d>> branchPositions =
-        new ArrayList<>(); // Starting at the right branch facing the driver station in clockwise
+        new ArrayList<>(); // Starting at the right
+    // branch facing the
+    // driver station in
+    // clockwise
 
     static {
       // Initialize faces

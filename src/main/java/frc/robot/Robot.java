@@ -60,7 +60,6 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         break;
     }
-
     // Start AdvantageKit logger
     Logger.start();
 

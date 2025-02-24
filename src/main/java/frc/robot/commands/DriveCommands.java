@@ -1,13 +1,8 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -25,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -35,7 +29,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -325,6 +318,7 @@ public class DriveCommands {
         retPose.getTranslation(), new Rotation2d(minusTrans.getX(), minusTrans.getY()));
   }
 
+  // * If this doesnt work, Henry is stupid */
   /**
    * @param drive
    * @return
@@ -432,61 +426,17 @@ public class DriveCommands {
         drive);
   }
 
-  private static final Command pointToPointDriveInternalCommand(
-      Drive drive, Pose2d targetPose, GoalEndState targetEndState) {
-
+  // * If this doesnt work, Javi is stupid */
+  public static Command pathfindToPath(Drive drive, PathPlannerPath path) {
     PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0);
-    PathPlannerPath trajectory;
-    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(drive.getPose(), targetPose);
-    trajectory = new PathPlannerPath(waypoints, constraints, null, targetEndState);
-    Logger.recordOutput("DriveAlongTrajectory/waypointLength", waypoints.size());
-    Logger.recordOutput("PointToPointDrive/end", targetPose);
-    return AutoBuilder.followPath(trajectory);
+    return AutoBuilder.pathfindThenFollowPath(path, constraints);
   }
 
-  private static final Command pointToPointDriveBetter(
-      Drive drive, Pose2d targetPose, GoalEndState targetEndState) {
+  // * If this doesnt work, Brian is stupid */
+  public static final Command pathfindToPose(Drive drive, Pose2d targetPose) {
 
     PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0);
-    PathPlannerPath trajectory;
-    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(drive.getPose(), targetPose);
-
-    trajectory = new PathPlannerPath(waypoints, constraints, null, targetEndState);
-
-    return new FollowPathCommand(
-        trajectory,
-        drive::getPose, // Robot pose supplier
-        drive::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (speeds, feedforwards) ->
-            drive.runVelocity(speeds), // Method that will drive the robot given ROBOT RELATIVE
-        // ChassisSpeeds, AND
-        // feedforwards
-        new PPHolonomicDriveController( // PPHolonomicController is the built in path following
-            // controller for holonomic
-            // drive trains
-            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-            ),
-        DriveConstants.ppConfig, // The robot configuration
-        () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red
-          // alliance
-          // This will flip the path being followed to the red side of the field.
-          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-          var alliance = DriverStation.getAlliance();
-          if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-          }
-          return false;
-        },
-        drive);
-  }
-
-  public static final Command pointToPointDriveCommand(
-      Drive drive, Pose2d targetPose, GoalEndState targetEndState) {
-    return new DeferredCommand(
-        () -> pointToPointDriveInternalCommand(drive, targetPose, targetEndState), Set.of(drive));
+    return AutoBuilder.pathfindToPose(targetPose, constraints, 1.0);
   }
 
   /**

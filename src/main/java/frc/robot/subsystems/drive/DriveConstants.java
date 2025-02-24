@@ -34,6 +34,11 @@ public class DriveConstants {
   public static final double wheelBase = Units.inchesToMeters(26.5);
   public static final double driveBaseRadius = Math.hypot(wheelBase / 2.0, wheelBase / 2.0);
   public static final double driveWheelRadiusMeters = Units.inchesToMeters(2);
+  public static final double kMaxDriveAcceleration = 14; // RPS
+  public static final double kMaxDriveDeceleration = 20; // RPS^2
+  public static final double kMaxDriveVelocity = 14; // RPS
+  public static final double kMaxSteeringVelocity = 10; // RPS^2
+
   public static final Translation2d[] moduleTranslations =
       new Translation2d[] {
         new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
