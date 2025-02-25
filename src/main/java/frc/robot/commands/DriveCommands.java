@@ -3,6 +3,7 @@ package frc.robot.commands;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.piece_detection.PieceDetection;
 import frc.robot.util.mechanical_advantage.LoggedTunableNumber;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
@@ -427,9 +430,16 @@ public class DriveCommands {
   }
 
   // * If this doesnt work, Javi is stupid */
-  public static Command pathfindToPath(Drive drive, PathPlannerPath path) {
-    PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0);
-    return AutoBuilder.pathfindThenFollowPath(path, constraints);
+  public static Command pathfindToPath(Drive drive, String path) {
+    try {
+      return AutoBuilder.pathfindThenFollowPath(
+          PathPlannerPath.fromPathFile(path),
+          new PathConstraints(3, 2, Math.toRadians(360), Math.toRadians(360), 12, false));
+    } catch (FileVersionException | IOException | ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return Commands.none();
   }
 
   // * If this doesnt work, Brian is stupid */

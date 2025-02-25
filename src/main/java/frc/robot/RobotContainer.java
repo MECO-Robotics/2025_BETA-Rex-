@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -320,7 +321,7 @@ public class RobotContainer {
               DriveCommands.pathfindToPose(
                   drive, new Pose2d(12.395, 5.137, Rotation2d.fromDegrees(-60))));
 
-      driverController.x().onTrue(DriveCommands.pathfindToPath(drive, javiPath));
+      driverController.x().onTrue(DriveCommands.pathfindToPath(drive, "JaviPath"));
 
     } catch (Exception e) {
       DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
