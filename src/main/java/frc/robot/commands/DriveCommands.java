@@ -434,9 +434,8 @@ public class DriveCommands {
     try {
       return AutoBuilder.pathfindThenFollowPath(
           PathPlannerPath.fromPathFile(path),
-          new PathConstraints(3, 2, Math.toRadians(360), Math.toRadians(360), 12, false));
+          new PathConstraints(4, 4, Math.toRadians(360), Math.toRadians(360), 12, false));
     } catch (FileVersionException | IOException | ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return Commands.none();
